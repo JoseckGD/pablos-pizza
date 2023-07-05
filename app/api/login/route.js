@@ -8,7 +8,7 @@ export async function POST(req, res) {
         if (user.length > 0) {
             return NextResponse.json({ status: true, message: 'Inicio de sesión exitoso', });
         }
-        return NextResponse.json({ status: true, message: 'Error: Usuario no encontrado', });
+        return NextResponse.json({ status: false, message: 'Usuario no encontrado', });
     } catch (error) {
         return NextResponse.json({ status: false, message: 'Error from the API! ' + error });
     }
