@@ -6,7 +6,7 @@ export async function POST(req, res) {
     try {
         const user = await iniciarSesion(body);
         if (user.length > 0) {
-            return NextResponse.json({ status: true, message: 'Inicio de sesión exitoso', });
+            return NextResponse.json({ status: true, message: 'Inicio de sesión exitoso',});
         }
         return NextResponse.json({ status: false, message: 'Usuario no encontrado', });
     } catch (error) {
@@ -25,6 +25,7 @@ async function iniciarSesion(data) {
                 return;
             }
             resolve(results);
+            console.log(values)
         });
     });
 }
