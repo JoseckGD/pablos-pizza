@@ -16,7 +16,7 @@ export async function PUT(req, res) {
 
 async function editSell(data) {
     console.log(data);
-    const { usuario_id, fecha, total,id } = data
+    const { usuario_id, fecha, total, id } = data
     return new Promise((resolve, reject) => {
         const query = 'UPDATE ventas SET usuario_id = ?, fecha = ?, total = ? WHERE id = ?';
         const values = [usuario_id, fecha, total, id];

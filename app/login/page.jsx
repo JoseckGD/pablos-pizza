@@ -3,6 +3,8 @@
 import useFetch from "@/hooks/useFetch";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
+import icono from "../assets/icon.svg";
+import Image from "next/image";
 
 const initialForm = {
   username: "",
@@ -36,14 +38,16 @@ const Login = () => {
   }, [data]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="w-1/3 bg-neutral-500 p-8 rounded-lg shadow">
-        <h2 className="text-2xl font-bold mb-4">Iniciar sesión</h2>
-        <form>
+    <div className="flex justify-around flex-row items-center h-screen">
+      <div className="w-1/3 p-8 rounded-lg shadow bg-black">
+        <form className="flex flex-col gap-14 ">
+          <h2 className="text-4xl text-white text-center font-bold mb-4">
+            Iniciar sesión
+          </h2>
           <div className="mb-4">
             <label
               htmlFor="username"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-white rounded-2xl text-xl font-bold mb-2"
             >
               Usuario:
             </label>
@@ -60,7 +64,7 @@ const Login = () => {
           <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-white rounded-2xl text-xl font-bold mb-2"
             >
               Contraseña:
             </label>
@@ -77,21 +81,22 @@ const Login = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-[#FFD785] w-full text-black font-bold text-xl py-2 px-4 rounded focus:outline-none"
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Login"}
+              {isLoading ? "Cargando..." : "Ingresar"}
             </button>
           </div>
         </form>
 
         {/* Mostrar el error si ocurrió */}
-        {error && <div>Error: {error}</div>}
+        {error && <p className="text-red-500 text-lg">Error: {error}</p>}
 
         {/* Mostrar los datos */}
         {data && <p>{data.message}</p>}
       </div>
+      <Image src={icono} width={500} height={500} />
     </div>
   );
 };

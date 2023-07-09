@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import dbPizzeriaConnection from '../../../../../utils/dbPizzeriaConnection';
 
-export async function DELETE(req,{params}){
+export async function DELETE(req, { params }) {
 
-    const {id}= await params
+    const { id } = await params
     try {
         const sell = await getSellByID(parseInt(id))
         console.log(sell);
@@ -20,7 +20,7 @@ export async function DELETE(req,{params}){
 }
 
 
-async function getSellByID(id){
+async function getSellByID(id) {
 
     return new Promise((resolve, reject) => {
         const query = 'SELECT * FROM ventas WHERE id = ?';
@@ -36,7 +36,7 @@ async function getSellByID(id){
 
 }
 
-async function deleteSell(id){
+async function deleteSell(id) {
 
     return new Promise((resolve, reject) => {
         const query = 'DELETE FROM ventas WHERE id = ?';
