@@ -1,3 +1,5 @@
+import Navbar from './components/Navbar'
+import { UsuarioProvider } from './contexts/UsuarioContext'
 import './globals.css'
 import { Inter } from 'next/font/google'
 
@@ -12,9 +14,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main style={{ backgroundColor: '#F05B5B' }}>
-          {children}
-        </main>
+        <UsuarioProvider>
+          <Navbar />
+          <main style={{ backgroundColor: '#F05B5B' }}>
+            {children}
+          </main>
+        </UsuarioProvider>
       </body>
     </html>
   )

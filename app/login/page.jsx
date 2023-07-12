@@ -1,10 +1,11 @@
 "use client";
 
 import useFetch from "@/hooks/useFetch";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import icono from "../assets/icon.svg";
 import Image from "next/image";
+import { useUsuarioContext } from "../contexts/UsuarioContext";
 
 const initialForm = {
   username: "",
@@ -13,6 +14,10 @@ const initialForm = {
 
 const Login = () => {
   const [form, setForm] = useState(initialForm);
+
+  const { setDataUser } = useUsuarioContext();
+
+  const router = useRouter();
 
   const { data, isLoading, error, fetchData } = useFetch(
     "http://localhost:3000/api/login",
@@ -33,7 +38,8 @@ const Login = () => {
 
   useEffect(() => {
     if (data && data.status == true) {
-      redirect("/");
+      setDataUser(data.data);
+      router.push("/");
     }
   }, [data]);
 
@@ -96,7 +102,7 @@ const Login = () => {
         {/* Mostrar los datos */}
         {data && <p>{data.message}</p>}
       </div>
-      <Image src={icono} width={500} height={500} />
+      <Image src={icono} alt="a" width={500} height={500} />
     </div>
   );
 };

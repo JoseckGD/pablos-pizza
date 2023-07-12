@@ -14,7 +14,7 @@ export default class UserRepository {
 
     async getUsers() {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM usuarios, personas WHERE usuarios.persona_id = personas.id ';
+            const query = 'SELECT * FROM usuarios, personas WHERE usuarios.persona_id = personas.id';
             dbPizzeriaConnection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
@@ -42,7 +42,7 @@ export default class UserRepository {
 
     async getUserByID(id) {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM usuarios WHERE id = ?';
+            const query = 'SELECT * FROM usuarios, personas WHERE (usuarios.persona_id = personas.id) AND usuarios.persona_id = ?';
             const values = [id];
             dbPizzeriaConnection.query(query, values, (error, results) => {
                 if (error) {

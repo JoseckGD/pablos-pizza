@@ -4,7 +4,6 @@ import useFetch from "@/hooks/useFetch";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
-
 const Sells = () => {
   const bodyStyles = {
     backgroundColor: "#F5E9D8",
@@ -86,56 +85,8 @@ const Sells = () => {
     borderRadius: "8px",
   };
 
-
-
-
   return (
     <div style={bodyStyles}>
-      <nav className="bg-red-500 py-4">
-        <div className="container mx-auto">
-          <div style={containerStyles}>
-            <div style={listStyles}>
-              <a
-                href="/"
-                className="flex items-center text-white font-bold text-xl"
-              >
-                <img
-                  src="https://www.pablospizza.com/wp-content/themes/pablopizza/images/logo-new.png"
-                  alt="Logo"
-                  className="mr-2"
-                  style={logoStyles}
-                />
-              </a>
-              <ul className="flex space-x-4" style={listStyles}>
-                <li style={listItemStyles}>
-                  <a href="/" className="text-white">
-                    Inicio
-                  </a>
-                </li>
-                <li style={selectedListItemStyles}>
-                  <a href="/sells" className="text-white">
-                    Venta
-                  </a>
-                </li>
-                <li style={listItemStyles}>
-                  <a href="" className="text-white">
-                    Inventario
-                  </a>
-                </li>
-                <li style={listItemStyles}>
-                  <a href="" className="text-white">
-                    Panel de Control
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div style={userStyles}>
-              Nombre de Usuario
-            </div>
-          </div>
-        </div>
-      </nav>
-
       <div className="container mx-auto">
         <div style={buttonContainerStyles}>
           <button style={buttonStyles}>Realizar Venta</button>
@@ -164,7 +115,6 @@ const Sells = () => {
           </table>
         </div>
       </div>
-
     </div>
   );
 };
