@@ -1,4 +1,5 @@
 import Navbar from './components/Navbar'
+import ProtectedRoute from './components/ProtectedRoute'
 import { UsuarioProvider } from './contexts/UsuarioContext'
 import './globals.css'
 import { Inter } from 'next/font/google'
@@ -16,9 +17,11 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <UsuarioProvider>
           <Navbar />
-          <main style={{ backgroundColor: '#F05B5B' }}>
-            {children}
-          </main>
+          <ProtectedRoute> {/* Envuelve las rutas que deseas proteger */}
+            <main style={{ backgroundColor: '#F05B5B' }}>
+              {children}
+            </main>
+          </ProtectedRoute>
         </UsuarioProvider>
       </body>
     </html>

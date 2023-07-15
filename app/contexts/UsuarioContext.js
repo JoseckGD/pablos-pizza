@@ -1,27 +1,36 @@
 "use client"
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Creamos el contexto para el usuario
 const UsuarioContext = createContext();
 
 // Componente proveedor del contexto
 export const UsuarioProvider = ({ children }) => {
-    // Aquí puedes obtener la información del usuario que inició sesión
-    // const [usuario, setUsuario] = useState(null);
-    const [usuario, setUsuario] = useLocalStorage("userSaveData", []);
+    const [usuario, setUsuario] = useLocalStorage("userSaveData", null);
+    const [isAuthUser, setIsAuthUser] = useState(false);
 
+    useEffect(() => {
+        if (usuario) {
+            setIsAuthUser(true);
+        } else {
+            setIsAuthUser(false);
+        }
+    }, [usuario]);
 
-    // Aquí puedes crear las funciones que modificarán el estado del usuario
-    const setDataUser = (usuario) => {
+    const iniciarSesion = (usuario) => {
         setUsuario(usuario);
-        // console.log(usuario);
-    }
+    };
 
+    const cerrarSesion = () => {
+        setUsuario(null);
+    };
 
     const data = {
         usuario,
-        setDataUser
+        iniciarSesion,
+        cerrarSesion,
+        isAuthUser
     };
 
     return (
@@ -36,4 +45,3 @@ export const useUsuarioContext = () => {
     if (!context) throw new Error("useContext debe usar con provider");
     return context;
 };
-

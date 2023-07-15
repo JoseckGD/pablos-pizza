@@ -11,7 +11,12 @@ const Navbar = () => {
 
   const [page, setPage] = useState(pathname.split("/")[1]);
 
-  const { usuario } = useUsuarioContext();
+  const { isAuthUser, usuario } = useUsuarioContext();
+
+  useEffect(() => {
+    console.log(isAuthUser);
+    !isAuthUser && router.push("/login");
+  }, []);
 
   // useEffect(() => {
   //   console.log(pathname);
@@ -63,7 +68,7 @@ const Navbar = () => {
 
   return (
     <>
-      {routes[pathname] && (
+      {isAuthUser === true && routes[pathname] && (
         <nav className="bg-red-500 py-4">
           <div className="container mx-auto">
             <div style={containerStyles}>

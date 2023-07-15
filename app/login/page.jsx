@@ -15,7 +15,7 @@ const initialForm = {
 const Login = () => {
   const [form, setForm] = useState(initialForm);
 
-  const { setDataUser } = useUsuarioContext();
+  const { iniciarSesion } = useUsuarioContext();
 
   const router = useRouter();
 
@@ -38,7 +38,7 @@ const Login = () => {
 
   useEffect(() => {
     if (data && data.status == true) {
-      setDataUser(data.data);
+      iniciarSesion(data.data);
       router.push("/");
     }
   }, [data]);

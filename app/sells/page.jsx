@@ -1,6 +1,7 @@
 "use client";
 
 import useFetch from "@/hooks/useFetch";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -85,6 +86,26 @@ const Sells = () => {
     borderRadius: "8px",
   };
 
+  const { data, isLoading, error, fetchData } = useFetch(
+    "http://localhost:3000/api/sells",
+    { method: "GET" }, // Opciones de la petición (puedes utilizar cualquier opción válida para fetch)
+    null, // Datos a enviar en la petición
+    3000 // Tiempo de espera en milisegundos (opcional)
+  );
+
+  const [sells, setSells] = useLocalStorage("sellsSaveData", null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log(data);
+    if (data.data.length > 0) {
+      setSells(data.data);
+    }
+  }, [data]);
+
   return (
     <div style={bodyStyles}>
       <div className="container mx-auto">
@@ -101,16 +122,13 @@ const Sells = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td style={tdStyles}>Vendedor 1</td>
-                <td style={tdStyles}>01/07/2023</td>
-                <td style={tdStyles}>$100.00</td>
-              </tr>
-              <tr>
-                <td style={tdStyles}>Vendedor 2</td>
-                <td style={tdStyles}>02/07/2023</td>
-                <td style={tdStyles}>$150.00</td>
-              </tr>
+              {sells.map((itemSell) => (
+                <tr>
+                  <td style={tdStyles}>Vendedor {itemSell.usuario_id}</td>
+                  <td style={tdStyles}>{itemSell.fecha}</td>
+                  <td style={tdStyles}>${itemSell.total}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
