@@ -1,55 +1,62 @@
 "use client";
-
 import useFetch from "@/hooks/useFetch";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const Sells = () => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedSell, setSelectedSell] = useState(null);
+  const [isConfirmationPopupOpen, setIsConfirmationPopupOpen] = useState(false);
+  const [sells, setSells] = useState([]);
+  const [data, setData] = useState(null);
+  const [searchDate, setSearchDate] = useState("");
+
   const bodyStyles = {
     backgroundColor: "#F5E9D8",
     minHeight: "100vh",
   };
 
-  const logoStyles = {
-    width: "70px",
-  };
-
-  const containerStyles = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingRight: "20px",
-  };
-
-  const userStyles = {
-    marginLeft: "10px",
-    color: "white",
-  };
-
-  const listStyles = {
-    listStyle: "none",
-    padding: "0",
-    display: "flex",
-    alignItems: "center",
-  };
-
-  const listItemStyles = {
-    marginRight: "10px",
-  };
-
   const buttonStyles = {
-    backgroundColor: "transparent",
-    color: "#B71C1C",
+    backgroundColor: "#B71C1C",
+    color: "white",
     padding: "10px 20px",
     borderRadius: "8px",
     border: "2px solid #B71C1C",
     fontSize: "16px",
     cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
   };
+
+  const cancelButtonStyles = {
+    backgroundColor: "#B71C1C",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    border: "2px solid #B71C1C",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "transform 0.3s ease-in-out",
+    marginLeft: "10px",
+  };
+
+  const inputStyles = {
+    padding: "10px",
+    borderRadius: "4px",
+    border: "1px solid #B71C1C",
+    marginBottom: "10px",
+    width: "100%",
+    fontSize: "16px",
+  };
+
   const buttonContainerStyles = {
     marginBottom: "20px",
-    paddingLeft: "20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingRight: "167px",
+    paddingLeft: "165px",
   };
 
   const tableContainerStyles = {
@@ -61,10 +68,12 @@ const Sells = () => {
     justifyContent: "center",
     alignItems: "center",
   };
+
   const tableStyles = {
     width: "80%",
     borderCollapse: "collapse",
   };
+
   const thStyles = {
     backgroundColor: "#B71C1C",
     color: "white",
@@ -77,40 +86,127 @@ const Sells = () => {
     borderBottom: "1px solid #ddd",
   };
 
-  const selectedListItemStyles = {
-    ...listItemStyles,
-    backgroundColor: "#B71C1C",
-    color: "white",
-    fontWeight: "bold",
-    padding: "8px 12px",
-    borderRadius: "8px",
+  const handleEdit = (sell) => {
+    setSelectedSell(sell);
+    setIsPopupOpen(true);
   };
 
-  const { data, isLoading, error, fetchData } = useFetch(
-    "http://localhost:3000/api/sells",
-    { method: "GET" }, // Opciones de la petición (puedes utilizar cualquier opción válida para fetch)
-    null, // Datos a enviar en la petición
-    3000 // Tiempo de espera en milisegundos (opcional)
-  );
+  const handleDelete = (sell) => {
+    setSelectedSell(sell);
+    setIsConfirmationPopupOpen(true);
+  };
 
-  const [sells, setSells] = useLocalStorage("sellsSaveData", null);
+  const handleConfirmDelete = () => {
+    // Lógica para eliminar la venta
+    console.log("Venta eliminada:", selectedSell);
+    // Aquí puedes realizar una llamada a la API para eliminar la venta
+    setIsConfirmationPopupOpen(false);
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmationPopupOpen(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedSell((prevSell) => ({
+      ...prevSell,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Lógica para guardar los cambios realizados en la venta
+    console.log("Venta modificada:", selectedSell);
+    // Aquí puedes realizar una llamada a la API para guardar los cambios
+    setIsPopupOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsPopupOpen(false);
+    setSelectedSell(null);
+  };
+
+  const handleOpenPopup = () => {
+    setSelectedSell({
+      fecha: getCurrentDate(),
+    });
+    setIsPopupOpen(true);
+  };
+
+  //Obtención de la fecha actual para el PopUp de Realizar venta
+  const getCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleSearchDate = (e) => {
+    setSearchDate(e.target.value);
+  };
+
+  //Filtro por fecha de las ventas
+  const filterSellsByDate = (sells) => {
+    if (!searchDate) {
+      return sells;
+    }
+    return sells.filter((sell) => sell.fecha.includes(searchDate));
+  };
 
   useEffect(() => {
+    // Obtener los datos de las ventas
     fetchData();
   }, []);
 
   useEffect(() => {
     console.log(data);
-    if (data.data.length > 0) {
+    if (data && data.data && data.data.length > 0) {
       setSells(data.data);
     }
   }, [data]);
 
+  const fetchData = () => {
+    // Uso de la API de consultar ventas
+    const fetchDataAsync = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/sells", { method: "GET" });
+        const responseData = await response.json();
+        setData(responseData);
+      } catch (error) {
+        console.error("Error fetching sells data:", error);
+      }
+    };
+    fetchDataAsync();
+  };
+
+  const formatFecha = (fecha) => {
+    return fecha.slice(0, 10);
+  };
+
   return (
     <div style={bodyStyles}>
       <div className="container mx-auto">
-        <div style={buttonContainerStyles}>
-          <button style={buttonStyles}>Realizar Venta</button>
+        <h1 style={{ textAlign: "center", fontWeight: "bold", fontSize: "32px", color: "#B71C1C" }}>
+          VENTAS DE PIZZAS
+        </h1>
+        <div style={buttonContainerStyles} className="button-container">
+          <button style={buttonStyles} className="button-realizar-venta" onClick={handleOpenPopup}>
+            Realizar Venta
+          </button>
+          <div>
+            <label style={{ marginRight: "10px" }}>
+              Buscar por fecha:
+            </label>
+            <input
+              type="date"
+              value={searchDate}
+              onChange={handleSearchDate}
+              style={inputStyles}
+            />
+          </div>
         </div>
         <div style={tableContainerStyles}>
           <table style={tableStyles}>
@@ -119,20 +215,137 @@ const Sells = () => {
                 <th style={thStyles}>Vendedor</th>
                 <th style={thStyles}>Fecha</th>
                 <th style={thStyles}>Total</th>
+                <th style={thStyles}>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {sells.map((itemSell) => (
-                <tr>
+              {filterSellsByDate(sells).map((itemSell) => (
+                <tr key={itemSell._id}>
                   <td style={tdStyles}>Vendedor {itemSell.usuario_id}</td>
-                  <td style={tdStyles}>{itemSell.fecha}</td>
+                  <td style={tdStyles}>{formatFecha(itemSell.fecha)}</td>
                   <td style={tdStyles}>${itemSell.total}</td>
+                  <td style={tdStyles}>
+                    <button
+                      onClick={() => handleEdit(itemSell)}
+                      style={{ ...buttonStyles, marginRight: "8px" }}
+                      className="button-edit"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(itemSell)}
+                      style={buttonStyles}
+                      className="button-delete"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+      {isPopupOpen && (
+        <div className="popup">
+          <form onSubmit={handleSubmit}>
+            <label>
+              Vendedor:
+              <input
+                type="text"
+                name="usuario_id"
+                value={selectedSell?.usuario_id || ""}
+                onChange={handleChange}
+                style={inputStyles}
+              />
+            </label>
+            <label>
+              Fecha:
+              <input
+                type="date"
+                name="fecha"
+                value={selectedSell?.fecha || ""}
+                onChange={handleChange}
+                style={inputStyles}
+              />
+            </label>
+            <label>
+              Total:
+              <input
+                type="text"
+                name="total"
+                value={selectedSell?.total || ""}
+                onChange={handleChange}
+                style={inputStyles}
+              />
+            </label>
+            <div className="button-container">
+              <button type="submit" style={buttonStyles}>
+                Guardar
+              </button>
+              <button type="button" style={cancelButtonStyles} onClick={handleCancel}>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      {isConfirmationPopupOpen && (
+        <div className="popup">
+          <div className="confirmation-container">
+            <p>¿Estás seguro de que deseas eliminar esta venta?</p>
+            <div className="button-container">
+              <button type="button" style={buttonStyles} onClick={handleConfirmDelete}>
+                Aceptar
+              </button>
+              <button type="button" style={cancelButtonStyles} onClick={handleCancelDelete}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+        .button-container {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 20px;
+        }
+
+        .button-realizar-venta:hover,
+        .button-edit:hover,
+        .button-delete:hover {
+          transform: scale(1.1);
+        }
+
+        .popup {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .popup form,
+        .confirmation-container {
+          background-color: #F5E9D8;
+          padding: 20px;
+          border-radius: 8px;
+        }
+
+        input {
+          padding: 10px;
+          border-radius: 4px;
+          border: 1px solid #B71C1C;
+          margin-bottom: 10px;
+          width: 100%;
+          font-size: 16px;
+        }
+      `}</style>
     </div>
   );
 };
