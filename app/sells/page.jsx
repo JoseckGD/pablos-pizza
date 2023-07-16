@@ -225,6 +225,7 @@ const Sells = () => {
                   <td style={tdStyles}>{formatFecha(itemSell.fecha)}</td>
                   <td style={tdStyles}>${itemSell.total}</td>
                   <td style={tdStyles}>
+                    
                     <button
                       onClick={() => handleEdit(itemSell)}
                       style={{ ...buttonStyles, marginRight: "8px" }}
@@ -289,6 +290,8 @@ const Sells = () => {
             </div>
           </form>
         </div>
+
+        //PopUp de confirmación de Eliminar
       )}
       {isConfirmationPopupOpen && (
         <div className="popup">

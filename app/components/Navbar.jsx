@@ -123,8 +123,17 @@ const Navbar = () => {
                       Inventario
                     </p>
                   </li>
-                  <li style={listItemStyles}>
-                    <a className="text-white">Panel de Control</a>
+                  <li
+                    style={
+                      page === "controlPanel" ? selectedListItemStyles : listItemStyles
+                    }
+                  >
+                    <p
+                      onClick={() => handleClickMenu("controlPanel")}
+                      className="text-white"
+                    >
+                      Panel de Control
+                    </p>
                   </li>
                 </ul>
               </div>
