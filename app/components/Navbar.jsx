@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUsuarioContext } from "../contexts/UsuarioContext";
 
-const routes = { "/": "a", "/sells": "sells" };
+const routes = { "/": "a", "/sells": "sells", "/controlPanel": "panel" };
 
 const Navbar = () => {
   const router = useRouter();
@@ -14,14 +14,8 @@ const Navbar = () => {
   const { isAuthUser, usuario } = useUsuarioContext();
 
   useEffect(() => {
-    console.log(isAuthUser);
-    !isAuthUser && router.push("/login");
-  }, []);
-
-  // useEffect(() => {
-  //   console.log(pathname);
-  //   console.log(routes[pathname]);
-  // }, []);
+    setPage(pathname.split("/")[1]);
+  }, [pathname]);
 
   const logoStyles = {
     width: "70px",
@@ -69,78 +63,84 @@ const Navbar = () => {
   return (
     <>
       {isAuthUser === true && routes[pathname] && (
-        <nav className="bg-red-500 py-4">
-          <div className="container mx-auto">
-            <div style={containerStyles}>
-              <div style={listStyles}>
-                <p
-                  onClick={() => handleClickMenu("page")}
-                  className="flex items-center text-white font-bold text-xl"
-                >
-                  <img
-                    src="https://www.pablospizza.com/wp-content/themes/pablopizza/images/logo-new.png"
-                    alt="Logo"
-                    className="mr-2"
-                    style={logoStyles}
-                  />
-                </p>
-                <ul className="flex space-x-4" style={listStyles}>
-                  <li
-                    style={
-                      page === "" ? selectedListItemStyles : listItemStyles
-                    }
+        <>
+          <nav className="bg-red-500 py-4">
+            <div className="container mx-auto">
+              <div style={containerStyles}>
+                <div style={listStyles}>
+                  <p
+                    onClick={() => handleClickMenu("page")}
+                    className="flex items-center text-white font-bold text-xl"
                   >
-                    <p
-                      onClick={() => handleClickMenu("")}
-                      className="text-white"
+                    <img
+                      src="https://www.pablospizza.com/wp-content/themes/pablopizza/images/logo-new.png"
+                      alt="Logo"
+                      className="mr-2"
+                      style={logoStyles}
+                    />
+                  </p>
+                  <ul className="flex space-x-4" style={listStyles}>
+                    <li
+                      style={
+                        page === "" ? selectedListItemStyles : listItemStyles
+                      }
                     >
-                      Inicio
-                    </p>
-                  </li>
-                  <li
-                    style={
-                      page === "sells" ? selectedListItemStyles : listItemStyles
-                    }
-                  >
-                    <p
-                      onClick={() => handleClickMenu("sells")}
-                      className="text-white"
+                      <p
+                        onClick={() => handleClickMenu("")}
+                        className="text-white"
+                      >
+                        Inicio
+                      </p>
+                    </li>
+                    <li
+                      style={
+                        page === "sells"
+                          ? selectedListItemStyles
+                          : listItemStyles
+                      }
                     >
-                      Venta
-                    </p>
-                  </li>
-                  <li
-                    style={
-                      page === "inventary"
-                        ? selectedListItemStyles
-                        : listItemStyles
-                    }
-                  >
-                    <p
-                      onClick={() => handleClickMenu("inventary")}
-                      className="text-white"
+                      <p
+                        onClick={() => handleClickMenu("sells")}
+                        className="text-white"
+                      >
+                        Venta
+                      </p>
+                    </li>
+                    <li
+                      style={
+                        page === "inventary"
+                          ? selectedListItemStyles
+                          : listItemStyles
+                      }
                     >
-                      Inventario
-                    </p>
-                  </li>
-                  <li
-                    style={
-                      page === "controlPanel" ? selectedListItemStyles : listItemStyles
-                    }
-                  >
-                    <p
-                      onClick={() => handleClickMenu("controlPanel")}
-                      className="text-white"
+                      <p
+                        onClick={() => handleClickMenu("inventary")}
+                        className="text-white"
+                      >
+                        Inventario
+                      </p>
+                    </li>
+                    <li
+                      style={
+                        page === "controlPanel"
+                          ? selectedListItemStyles
+                          : listItemStyles
+                      }
                     >
-                      Panel de Control
-                    </p>
-                  </li>
-                </ul>
+                      <p
+                        onClick={() => handleClickMenu("controlPanel")}
+                        className="text-white"
+                      >
+                        Panel de Control
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+                <div style={userStyles}>{usuario.nombre}</div>
               </div>
-              <div style={userStyles}>{usuario.nombre}</div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        </>
       )}
     </>
   );

@@ -1,9 +1,8 @@
 "use client";
-import useFetch from "@/hooks/useFetch";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Loader from "../components/Loader";
 
 const Sells = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -172,7 +171,9 @@ const Sells = () => {
     // Uso de la API de consultar ventas
     const fetchDataAsync = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/sells", { method: "GET" });
+        const response = await fetch("http://localhost:3000/api/sells", {
+          method: "GET",
+        });
         const responseData = await response.json();
         setData(responseData);
       } catch (error) {
@@ -187,169 +188,191 @@ const Sells = () => {
   };
 
   return (
-    <div style={bodyStyles}>
-      <div className="container mx-auto">
-        <h1 style={{ textAlign: "center", fontWeight: "bold", fontSize: "32px", color: "#B71C1C" }}>
-          VENTAS DE PIZZAS
-        </h1>
-        <div style={buttonContainerStyles} className="button-container">
-          <button style={buttonStyles} className="button-realizar-venta" onClick={handleOpenPopup}>
-            Realizar Venta
-          </button>
-          <div>
-            <label style={{ marginRight: "10px" }}>
-              Buscar por fecha:
-            </label>
-            <input
-              type="date"
-              value={searchDate}
-              onChange={handleSearchDate}
-              style={inputStyles}
-            />
-          </div>
-        </div>
-        <div style={tableContainerStyles}>
-          <table style={tableStyles}>
-            <thead>
-              <tr>
-                <th style={thStyles}>Vendedor</th>
-                <th style={thStyles}>Fecha</th>
-                <th style={thStyles}>Total</th>
-                <th style={thStyles}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filterSellsByDate(sells).map((itemSell) => (
-                <tr key={itemSell._id}>
-                  <td style={tdStyles}>Vendedor {itemSell.usuario_id}</td>
-                  <td style={tdStyles}>{formatFecha(itemSell.fecha)}</td>
-                  <td style={tdStyles}>${itemSell.total}</td>
-                  <td style={tdStyles}>
-                    
-                    <button
-                      onClick={() => handleEdit(itemSell)}
-                      style={{ ...buttonStyles, marginRight: "8px" }}
-                      className="button-edit"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(itemSell)}
-                      style={buttonStyles}
-                      className="button-delete"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      {isPopupOpen && (
-        <div className="popup">
-          <form onSubmit={handleSubmit}>
-            <label>
-              Vendedor:
-              <input
-                type="text"
-                name="usuario_id"
-                value={selectedSell?.usuario_id || ""}
-                onChange={handleChange}
-                style={inputStyles}
-              />
-            </label>
-            <label>
-              Fecha:
+    <Loader>
+      <div style={bodyStyles}>
+        <div className="container mx-auto">
+          <h1
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "32px",
+              color: "#B71C1C",
+            }}
+          >
+            VENTAS DE PIZZAS
+          </h1>
+          <div style={buttonContainerStyles} className="button-container">
+            <button
+              style={buttonStyles}
+              className="button-realizar-venta"
+              onClick={handleOpenPopup}
+            >
+              Realizar Venta
+            </button>
+            <div>
+              <label style={{ marginRight: "10px" }}>Buscar por fecha:</label>
               <input
                 type="date"
-                name="fecha"
-                value={selectedSell?.fecha || ""}
-                onChange={handleChange}
+                value={searchDate}
+                onChange={handleSearchDate}
                 style={inputStyles}
               />
-            </label>
-            <label>
-              Total:
-              <input
-                type="text"
-                name="total"
-                value={selectedSell?.total || ""}
-                onChange={handleChange}
-                style={inputStyles}
-              />
-            </label>
-            <div className="button-container">
-              <button type="submit" style={buttonStyles}>
-                Guardar
-              </button>
-              <button type="button" style={cancelButtonStyles} onClick={handleCancel}>
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </div>
-
-        //PopUp de confirmación de Eliminar
-      )}
-      {isConfirmationPopupOpen && (
-        <div className="popup">
-          <div className="confirmation-container">
-            <p>¿Estás seguro de que deseas eliminar esta venta?</p>
-            <div className="button-container">
-              <button type="button" style={buttonStyles} onClick={handleConfirmDelete}>
-                Aceptar
-              </button>
-              <button type="button" style={cancelButtonStyles} onClick={handleCancelDelete}>
-                Cancelar
-              </button>
             </div>
           </div>
+          <div style={tableContainerStyles}>
+            <table style={tableStyles}>
+              <thead>
+                <tr>
+                  <th style={thStyles}>Vendedor</th>
+                  <th style={thStyles}>Fecha</th>
+                  <th style={thStyles}>Total</th>
+                  <th style={thStyles}>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filterSellsByDate(sells).map((itemSell, index) => (
+                  <tr key={index}>
+                    <td style={tdStyles}>Vendedor {itemSell.usuario_id}</td>
+                    <td style={tdStyles}>{formatFecha(itemSell.fecha)}</td>
+                    <td style={tdStyles}>${itemSell.total}</td>
+                    <td style={tdStyles}>
+                      <button
+                        onClick={() => handleEdit(itemSell)}
+                        style={{ ...buttonStyles, marginRight: "8px" }}
+                        className="button-edit"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(itemSell)}
+                        style={buttonStyles}
+                        className="button-delete"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      )}
-      <style jsx>{`
-        .button-container {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 20px;
-        }
+        {isPopupOpen && (
+          <div className="popup">
+            <form onSubmit={handleSubmit}>
+              <label>
+                Vendedor:
+                <input
+                  type="text"
+                  name="usuario_id"
+                  value={selectedSell?.usuario_id || ""}
+                  onChange={handleChange}
+                  style={inputStyles}
+                />
+              </label>
+              <label>
+                Fecha:
+                <input
+                  type="date"
+                  name="fecha"
+                  value={selectedSell?.fecha || ""}
+                  onChange={handleChange}
+                  style={inputStyles}
+                />
+              </label>
+              <label>
+                Total:
+                <input
+                  type="text"
+                  name="total"
+                  value={selectedSell?.total || ""}
+                  onChange={handleChange}
+                  style={inputStyles}
+                />
+              </label>
+              <div className="button-container">
+                <button type="submit" style={buttonStyles}>
+                  Guardar
+                </button>
+                <button
+                  type="button"
+                  style={cancelButtonStyles}
+                  onClick={handleCancel}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
 
-        .button-realizar-venta:hover,
-        .button-edit:hover,
-        .button-delete:hover {
-          transform: scale(1.1);
-        }
+          //PopUp de confirmación de Eliminar
+        )}
+        {isConfirmationPopupOpen && (
+          <div className="popup">
+            <div className="confirmation-container">
+              <p>¿Estás seguro de que deseas eliminar esta venta?</p>
+              <div className="button-container">
+                <button
+                  type="button"
+                  style={buttonStyles}
+                  onClick={handleConfirmDelete}
+                >
+                  Aceptar
+                </button>
+                <button
+                  type="button"
+                  style={cancelButtonStyles}
+                  onClick={handleCancelDelete}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        <style jsx>{`
+          .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+          }
 
-        .popup {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+          .button-realizar-venta:hover,
+          .button-edit:hover,
+          .button-delete:hover {
+            transform: scale(1.1);
+          }
 
-        .popup form,
-        .confirmation-container {
-          background-color: #F5E9D8;
-          padding: 20px;
-          border-radius: 8px;
-        }
+          .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
 
-        input {
-          padding: 10px;
-          border-radius: 4px;
-          border: 1px solid #B71C1C;
-          margin-bottom: 10px;
-          width: 100%;
-          font-size: 16px;
-        }
-      `}</style>
-    </div>
+          .popup form,
+          .confirmation-container {
+            background-color: #f5e9d8;
+            padding: 20px;
+            border-radius: 8px;
+          }
+
+          input {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #b71c1c;
+            margin-bottom: 10px;
+            width: 100%;
+            font-size: 16px;
+          }
+        `}</style>
+      </div>
+    </Loader>
   );
 };
 

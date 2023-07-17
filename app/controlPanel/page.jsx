@@ -15,6 +15,7 @@ import queso from "../assets/queso.png";
 import pizza from "../assets/pizza.png";
 import Chart from "chart.js/auto";
 import Link from "next/link";
+import Loader from "../components/Loader";
 
 const bodyStyles = {
   backgroundColor: "#F5E9D8",
@@ -59,7 +60,7 @@ const titleStyles = {
   fontWeight: "bold",
   color: "#333333",
   marginBottom: "10px",
-  marginBottom: "10px", 
+  marginBottom: "10px",
 };
 
 const descriptionStyles = {
@@ -100,12 +101,14 @@ const ControlPanel = () => {
       },
     };
 
-    const ctx = chartRef.current.getContext("2d");
-    new Chart(ctx, {
-      type: "bar",
-      data: data,
-      options: options,
-    });
+    if (chartRef.current !== null) {
+      const ctx = chartRef.current.getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: data,
+        options: options,
+      });
+    }
   }, []);
 
   const handleCardHover = (e) => {
@@ -117,72 +120,93 @@ const ControlPanel = () => {
   };
 
   return (
-    <div style={bodyStyles}>
-      <h1 style={{ textAlign: "center", fontWeight: "bold", fontSize: "32px", color: "#B71C1C" }}>
-        PANEL DE CONTROL
-      </h1>
-      <div className="card-container" style={cardContainerStyles}>
-        <Link href="/usuarios">
+    <Loader>
+      <div style={bodyStyles}>
+        <h1
+          style={{
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: "32px",
+            color: "#B71C1C",
+          }}
+        >
+          PANEL DE CONTROL
+        </h1>
+        <div className="card-container" style={cardContainerStyles}>
+          <Link href="/usuarios">
+            <div
+              className="card"
+              style={{ ...cardStyles, width: "388px", height: "377px" }}
+              onMouseEnter={handleCardHover}
+              onMouseLeave={handleCardLeave}
+            >
+              <div className="card-content">
+                <h2 style={titleStyles}>Usuarios</h2>
+                <div style={imageStyles}>
+                  <Image src={icono} alt="Icono" width={200} height={200} />
+                </div>
+                <p style={descriptionStyles}>
+                  Administra los usuarios del sistema.
+                </p>
+              </div>
+            </div>
+          </Link>
           <div
             className="card"
-            style={{ ...cardStyles, width: "388px", height: "377px" }}
+            style={{ ...cardStyles, width: "783px", height: "388px" }}
+            onMouseEnter={handleCardHover}
+            onMouseLeave={handleCardLeave}
+          >
+            <div
+              className="card-content"
+              style={{ width: "100%", height: "100%" }}
+            >
+              <h2>
+                <strong>Ventas</strong>
+              </h2>
+              <canvas
+                ref={chartRef}
+                style={{ width: "100%", height: "100%" }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="card-container" style={cardContainerStyles}>
+          <div
+            className="card"
+            style={{ ...cardStyles, width: "704px", height: "388px" }}
             onMouseEnter={handleCardHover}
             onMouseLeave={handleCardLeave}
           >
             <div className="card-content">
-              <h2 style={titleStyles}>Usuarios</h2>
+              <h2 style={titleStyles}>Inventario</h2>
               <div style={imageStyles}>
-                <Image src={icono} alt="Icono" width={200} height={200} />
+                <Image src={tomate} alt="Icono" width={150} height={150} />
+                <Image src={harina} alt="Icono" width={150} height={150} />
+                <Image src={queso} alt="Icono" width={140} height={150} />
               </div>
-              <p style={descriptionStyles}>Administra los usuarios del sistema.</p>
+              <p style={descriptionStyles}>
+                Administra el inventario de productos.
+              </p>
             </div>
           </div>
-        </Link>
-        <div
-          className="card"
-          style={{ ...cardStyles, width: "783px", height: "388px" }}
-          onMouseEnter={handleCardHover}
-          onMouseLeave={handleCardLeave}
-        >
-          <div className="card-content" style={{ width: "100%", height: "100%" }}>
-          <h2><strong>Ventas</strong></h2>
-            <canvas ref={chartRef} style={{ width: "100%", height: "100%" }} />
+          <div
+            className="card"
+            style={{ ...cardStyles, width: "519px", height: "388px" }}
+            onMouseEnter={handleCardHover}
+            onMouseLeave={handleCardLeave}
+          >
+            <div className="card-content">
+              <h2 style={titleStyles}>Menú</h2>
+              <div style={imageStyles}>
+                <Image src={pizza} alt="Icono" width={210} height={210} />
+              </div>
+              <p style={descriptionStyles}>Personaliza el menú de opciones.</p>
+            </div>
           </div>
         </div>
       </div>
-      <div className="card-container" style={cardContainerStyles}>
-        <div
-          className="card"
-          style={{ ...cardStyles, width: "704px", height: "388px" }}
-          onMouseEnter={handleCardHover}
-          onMouseLeave={handleCardLeave}
-        >
-          <div className="card-content">
-            <h2 style={titleStyles}>Inventario</h2>
-            <div style={imageStyles}>
-              <Image src={tomate} alt="Icono" width={150} height={150} />
-              <Image src={harina} alt="Icono" width={150} height={150} />
-              <Image src={queso} alt="Icono" width={140} height={150} />
-            </div>
-            <p style={descriptionStyles}>Administra el inventario de productos.</p>
-          </div>
-        </div>
-        <div
-          className="card"
-          style={{ ...cardStyles, width: "519px", height: "388px" }}
-          onMouseEnter={handleCardHover}
-          onMouseLeave={handleCardLeave}
-        >
-          <div className="card-content">
-            <h2 style={titleStyles}>Menú</h2>
-            <div style={imageStyles}>
-              <Image src={pizza} alt="Icono" width={210} height={210} />
-            </div>
-            <p style={descriptionStyles}>Personaliza el menú de opciones.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    </Loader>
   );
 };
 

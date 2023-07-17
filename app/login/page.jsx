@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import icono from "../assets/icon.svg";
 import Image from "next/image";
 import { useUsuarioContext } from "../contexts/UsuarioContext";
+import Loader from "../components/Loader";
 
 const initialForm = {
   username: "",
@@ -13,9 +14,15 @@ const initialForm = {
 };
 
 const Login = () => {
-  const [form, setForm] = useState(initialForm);
+  const { iniciarSesion, isAuthUser } = useUsuarioContext();
 
-  const { iniciarSesion } = useUsuarioContext();
+  useEffect(() => {
+    if (isAuthUser) {
+      router.push("/");
+    }
+  }, []);
+
+  const [form, setForm] = useState(initialForm);
 
   const router = useRouter();
 

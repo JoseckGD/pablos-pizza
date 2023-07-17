@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [isAuthUser, router]);
 
-  return <>{isAuthUser && children}</>; // Renderizar las rutas protegidas solo si el usuario está autenticado
+  return <>{children}</>; // Renderizar las rutas protegidas solo si el usuario está autenticado
 };
 
 export default ProtectedRoute;

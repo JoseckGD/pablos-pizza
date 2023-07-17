@@ -16,8 +16,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <UsuarioProvider>
-          <Navbar />
-          <ProtectedRoute> {/* Envuelve las rutas que deseas proteger */}
+          <ProtectedRoute>
+            <Navbar />
             <main style={{ backgroundColor: '#F05B5B' }}>
               {children}
             </main>

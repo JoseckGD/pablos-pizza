@@ -1,6 +1,6 @@
 "use client"
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 // Creamos el contexto para el usuario
 const UsuarioContext = createContext();
@@ -8,19 +8,29 @@ const UsuarioContext = createContext();
 // Componente proveedor del contexto
 export const UsuarioProvider = ({ children }) => {
     const [usuario, setUsuario] = useLocalStorage("userSaveData", null);
-    const [isAuthUser, setIsAuthUser] = useState(false);
+    const [isAuthUser, setIsAuthUser] = useState(usuario ? true : false);
+
+
+    // useEffect(() => {
+    //     if (!usuario && pathname !== '/login') {
+    //         router.push('/login');
+    //     }
+    //     console.log(pathname);
+    // }, [pathname])
+
 
     useEffect(() => {
         if (usuario) {
             setIsAuthUser(true);
         } else {
             setIsAuthUser(false);
+            // router.push('/login');
         }
     }, [usuario]);
 
-    const iniciarSesion = (usuario) => {
+    const iniciarSesion = useCallback((usuario) => {
         setUsuario(usuario);
-    };
+    });
 
     const cerrarSesion = () => {
         setUsuario(null);
