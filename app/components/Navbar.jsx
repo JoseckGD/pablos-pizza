@@ -3,7 +3,12 @@ import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUsuarioContext } from "../contexts/UsuarioContext";
 
-const routes = { "/": "a", "/sells": "sells", "/controlPanel": "panel" };
+const routes = {
+  "/": "a",
+  "/sells": "sells",
+  "/controlPanel": "controlPanel",
+  "/inventory": "inventory",
+};
 
 const Navbar = () => {
   const router = useRouter();
@@ -108,13 +113,13 @@ const Navbar = () => {
                     </li>
                     <li
                       style={
-                        page === "inventary"
+                        page === "inventory"
                           ? selectedListItemStyles
                           : listItemStyles
                       }
                     >
                       <p
-                        onClick={() => handleClickMenu("inventary")}
+                        onClick={() => handleClickMenu("inventory")}
                         className="text-white"
                       >
                         Inventario
