@@ -8,6 +8,7 @@ const routes = {
   "/sells": "sells",
   "/controlPanel": "controlPanel",
   "/inventory": "inventory",
+  "/reportsStatistics": "reportsStatistics",
 };
 
 const Navbar = () => {

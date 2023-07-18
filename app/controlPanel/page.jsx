@@ -151,12 +151,14 @@ const ControlPanel = () => {
               </div>
             </div>
           </Link>
-          <div
+          <Link
+            href="/reportsStatistics"
             className="card"
             style={{ ...cardStyles, width: "783px", height: "388px" }}
             onMouseEnter={handleCardHover}
             onMouseLeave={handleCardLeave}
           >
+            {/* <Link href="/reportsStatistics"> */}
             <div
               className="card-content"
               style={{ width: "100%", height: "100%" }}
@@ -169,7 +171,8 @@ const ControlPanel = () => {
                 style={{ width: "100%", height: "100%" }}
               />
             </div>
-          </div>
+            {/* </Link> */}
+          </Link>
         </div>
         <div className="card-container" style={cardContainerStyles}>
           <div
