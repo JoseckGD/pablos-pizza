@@ -10,6 +10,7 @@ const routes = {
   "/inventory": "inventory",
   "/reportsStatistics": "reportsStatistics",
   "/userManagement": "userManagement",
+  "/userAdmin": "userAdmin",
 };
 
 const Navbar = () => {
