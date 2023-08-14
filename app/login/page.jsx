@@ -51,7 +51,7 @@ const Login = () => {
   }, [data]);
 
   return (
-    <div className="flex justify-around flex-row items-center h-screen">
+    <div className="flex bg-red-500 justify-around flex-row items-center h-screen">
       <div className="w-1/3 p-8 rounded-lg shadow bg-black">
         <form className="flex flex-col gap-14 ">
           <h2 className="text-4xl text-white text-center font-bold mb-4">

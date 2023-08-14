@@ -1,109 +1,83 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import Loader from "../components/Loader";
+import useFetch from "@/hooks/useFetch";
+import { LayoutBase } from "../components/LayoutBase";
+import { TitlePage } from "../components/TitlePage";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircle, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 const ReportsStatistics = () => {
-  const chartRefs = [useRef(null), useRef(null), useRef(null)];
+  const chartRef = useRef(null);
 
-  const data = {
-    labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo"],
-    datasets: [
-      {
-        label: "Ventas",
-        data: [50, 80, 45, 70, 90],
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-      },
-      {
-        label: "Gastos",
-        data: [30, 40, 55, 25, 35],
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
-      },
-    ],
-  };
+  const [dataSells, setDataSells] = useState(null);
 
-  const lineChartData = {
-    labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo"],
-    datasets: [
-      {
-        label: "Ingresos",
-        data: [150, 180, 145, 170, 190],
-        borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
-      },
-    ],
-  };
-
-  const pieChartData = {
-    labels: ["Rojo", "Azul", "Amarillo"],
-    datasets: [
-      {
-        data: [30, 20, 50],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
-        ],
-      },
-    ],
-  };
+  const { data, isLoading, error, fetchData } = useFetch(
+    "http://localhost:3000/api/sells/getSellsGlobal",
+    { method: "GET" } // Opciones de la petición (puedes utilizar cualquier opción válida para fetch)
+  );
 
   useEffect(() => {
-    chartRefs.forEach((chartRef, index) => {
-      if (chartRef.current) {
-        const ctx = chartRef.current.getContext("2d");
-        let chartData, chartType;
-        switch (index) {
-          case 0:
-            chartData = data;
-            chartType = "bar";
-            break;
-          case 1:
-            chartData = lineChartData;
-            chartType = "line";
-            break;
-          case 2:
-            chartData = pieChartData;
-            chartType = "pie";
-            break;
-          default:
-            break;
-        }
+    let _data;
+    if (data) {
+      setDataSells(data.sells);
+      _data = {
+        labels: data.sells.map((sell) => {
+          return sell.fecha;
+        }),
+        datasets: [
+          {
+            label: "Ventas",
+            data: data.sells.map((sell) => {
+              return sell.total;
+            }),
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+          },
+        ],
+      };
 
-        new Chart(ctx, {
-          type: chartType,
-          data: chartData,
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
+      const ctx = chartRef.current.getContext("2d");
+
+      if (chartRef.current.chart) {
+        chartRef.current.chart.destroy();
+      }
+
+      chartRef.current.chart = new Chart(ctx, {
+        type: "bar",
+        data: _data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
             },
           },
-        });
-      }
-    });
+        },
+      });
+    }
+    console.log(_data);
+  }, [data]);
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   return (
-    <Loader>
-      <div className="p-5 bg-white">
-        <h1 className="text-center font-bold text-4xl text-[#B71C1C] bg-white mb-5">
-          Informes y Estadísticas
-        </h1>
-        <div className="bg-white flex flex-row items-center justify-around p-4">
-          <div className="w-96 h-24">
-            <canvas ref={chartRefs[0]}></canvas>
+    <LayoutBase>
+      <TitlePage title={"Informes y Estadísticas"} />
+      <div className="flex flex-row items-center justify-around p-4">
+        {isLoading ? (
+          <FontAwesomeIcon
+            icon={faSpinner}
+            className="w-20 h-20 animate-spin"
+          />
+        ) : (
+          <div className="w-full h-20">
+            <canvas ref={chartRef}></canvas>
           </div>
-          <div className="w-96 h-24">
-            <canvas ref={chartRefs[1]}></canvas>
-          </div>
-          <div className="w-96 h-24">
-            <canvas ref={chartRefs[2]}></canvas>
-          </div>
-        </div>
+        )}
       </div>
-    </Loader>
+    </LayoutBase>
   );
 };
 

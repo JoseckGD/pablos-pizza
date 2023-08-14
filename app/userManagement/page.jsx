@@ -1,226 +1,129 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { LayoutBase } from "../components/LayoutBase";
+import { TitlePage } from "../components/TitlePage";
+import { dataTableHeaderUser } from "@/constants/dataTableUser";
+import useFetch from "@/hooks/useFetch";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faSpinner, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "../components/Button";
+import { TD } from "../components/Table/TD";
+import { ModalUser } from "../components/Modals/ModalUser";
+import { ModalDeleteUser } from "../components/Modals/ModalDeleteUser";
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([
-    {
-      username: "",
-      position: "",
-      isActive: false,
-    },
-  ]);
+  const [users, setUsers] = useState(null);
+  const [openModalAdd, setOpenModalAdd] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
+  const [dataUser, setDataUser] = useState(null);
 
-  const handleAddUser = () => {
-    const newUser = {
-      username: "",
-      position: "",
-      isActive: false,
-    };
-    setUsers([...users, newUser]);
+  const { data, isLoading, error, fetchData } = useFetch(
+    "http://localhost:3000/api/usuarios",
+    { method: "GET" } // Opciones de la petición (puedes utilizar cualquier opción válida para fetch)
+  );
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+      setUsers(data.users);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const toggleModalAdd = () => {
+    setDataUser(null);
+    setOpenModalAdd(!openModalAdd);
+    setTimeout(() => {
+      fetchData();
+    }, 1000);
   };
 
-  const handleRemoveUser = (index) => {
-    const updatedUsers = [...users];
-    updatedUsers.splice(index, 1);
-    setUsers(updatedUsers);
+  const toggleModalDelete = () => {
+    setDataUser(null);
+    setOpenModalDelete(!openModalDelete);
+    setTimeout(() => {
+      fetchData();
+    }, 1000);
   };
 
-  const handleChangeUsername = (index, value) => {
-    const updatedUsers = [...users];
-    updatedUsers[index].username = value;
-    setUsers(updatedUsers);
+  const handleModifyUser = (user) => {
+    toggleModalAdd();
+    setDataUser(user);
   };
 
-  const handleChangePosition = (index, value) => {
-    const updatedUsers = [...users];
-    updatedUsers[index].position = value;
-    setUsers(updatedUsers);
-  };
-
-  const handleToggleActive = (index, status) => {
-    const updatedUsers = [...users];
-    updatedUsers[index].isActive = status;
-    setUsers(updatedUsers);
+  const handleDeleteUser = (user) => {
+    toggleModalDelete();
+    setDataUser(user);
   };
 
   return (
-    <div>
-      <div
-        style={{
-          backgroundColor: "#FFD7C0",
-          minHeight: "calc(100vh - 50px)",
-          padding: "20px",
-        }}
-      >
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
+    <LayoutBase>
+      <ModalUser
+        openModal={openModalAdd}
+        toggle={toggleModalAdd}
+        dataUser={dataUser}
+      />
+      <ModalDeleteUser
+        openModal={openModalDelete}
+        toggle={toggleModalDelete}
+        dataUser={dataUser}
+      />
+      <TitlePage title="Administrar Usuarios" />
+
+      <article className="flex justify-between items-center">
+        <Button title="Agregar empleado" eventOnClick={toggleModalAdd} />
+      </article>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            {dataTableHeaderUser.map((header) => (
               <th
                 style={{
-                  backgroundColor: "transparent",
-                  border: "none",
+                  backgroundColor: "#B71C1C",
+                  color: "white",
                   padding: "12px",
-                  textAlign: "left",
+                  textAlign: "center",
                 }}
               >
-                Usuario
+                {header}
               </th>
-              <th
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  padding: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Puesto
-              </th>
-              <th
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  padding: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Estado de Empleado
-              </th>
-              <th
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  padding: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Agregar
-              </th>
-              <th
-                style={{
-                  backgroundColor: "transparent",
-                  border: "none",
-                  padding: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Eliminar
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={index}>
-                <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>
-                  <input
-                    type="text"
-                    value={user.username}
-                    onChange={(e) =>
-                      handleChangeUsername(index, e.target.value)
-                    }
-                    style={{
-                      width: "100%",
-                      borderRadius: "8px",
-                      border: "1px solid #ddd",
-                      padding: "10px",
-                    }}
-                  />
-                </td>
-                <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>
-                  <input
-                    type="text"
-                    value={user.position}
-                    onChange={(e) =>
-                      handleChangePosition(index, e.target.value)
-                    }
-                    style={{
-                      width: "100%",
-                      borderRadius: "8px",
-                      border: "1px solid #ddd",
-                      padding: "10px",
-                    }}
-                  />
-                </td>
-                <td style={{ padding: "12px", borderBottom: "1px solid #ddd" }}>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <label style={{ marginRight: "10px" }}>Activo</label>
-                    <input
-                      type="checkbox"
-                      checked={user.isActive}
-                      onChange={() => handleToggleActive(index, !user.isActive)}
-                    />
-                    <label style={{ marginLeft: "10px", marginRight: "10px" }}>
-                      Inactivo
-                    </label>
-                    <input
-                      type="checkbox"
-                      checked={!user.isActive}
-                      onChange={() => handleToggleActive(index, !user.isActive)}
-                    />
-                  </div>
-                </td>
-                {index === users.length - 1 ? (
-                  <>
-                    <td
-                      style={{
-                        padding: "12px",
-                        borderBottom: "1px solid #ddd",
-                        backgroundColor: "transparent",
-                        border: "none",
-                      }}
-                    >
-                      <button
-                        onClick={handleAddUser}
-                        style={{
-                          backgroundColor: "#FFD785",
-                          color: "black",
-                          padding: "8px 12px",
-                          borderRadius: "8px",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        Agregar
-                      </button>
-                    </td>
-                    <td
-                      style={{
-                        padding: "12px",
-                        borderBottom: "1px solid #ddd",
-                        backgroundColor: "transparent",
-                        border: "none",
-                      }}
-                    ></td>
-                  </>
-                ) : (
-                  <td
-                    style={{
-                      padding: "12px",
-                      borderBottom: "1px solid #ddd",
-                      backgroundColor: "transparent",
-                      border: "none",
-                    }}
-                  >
-                    <button
-                      onClick={() => handleRemoveUser(index)}
-                      style={{
-                        backgroundColor: "#FFD785",
-                        color: "black",
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                )}
-              </tr>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </tr>
+        </thead>
+        <tbody>
+          {isLoading ? (
+            <tr className="flex justify-center items-center">
+              <FontAwesomeIcon
+                icon={faSpinner}
+                className="w-20 h-20 animate-spin"
+              />
+            </tr>
+          ) : (
+            users?.map((user, index) => (
+              <tr key={index}>
+                <TD>{user.nombre}</TD>
+                <TD>{user.apellidos}</TD>
+                <TD>{user.telefono}</TD>
+                <TD>{user.correo}</TD>
+                <td className="flex justify-center gap-4">
+                  <Button
+                    eventOnClick={() => handleModifyUser(user)}
+                    icon={faEdit}
+                  />
+                  <Button
+                    eventOnClick={() => handleDeleteUser(user)}
+                    icon={faTrash}
+                  />
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </LayoutBase>
   );
 };
 

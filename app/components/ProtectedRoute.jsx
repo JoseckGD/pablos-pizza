@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const ProtectedRoute = ({ children }) => {
   const router = useRouter();
-  const { isAuthUser } = useUsuarioContext();
+  const { isAuthUser, usuario } = useUsuarioContext();
 
   useEffect(() => {
     if (!isAuthUser) {

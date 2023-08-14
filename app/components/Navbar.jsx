@@ -2,65 +2,23 @@
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUsuarioContext } from "../contexts/UsuarioContext";
-
-const routes = {
-  "/": "a",
-  "/sells": "sells",
-  "/controlPanel": "controlPanel",
-  "/inventory": "inventory",
-  "/reportsStatistics": "reportsStatistics",
-  "/userManagement": "userManagement",
-  "/userAdmin": "userAdmin",
-};
+import { routes } from "@/constants/routes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { CardInfoUser } from "./CardInfoUser";
 
 const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
 
   const [page, setPage] = useState(pathname.split("/")[1]);
+  const [visibleInfo, setVisibleInfo] = useState(false);
 
-  const { isAuthUser, usuario } = useUsuarioContext();
+  const { isAuthUser, usuario, cerrarSesion } = useUsuarioContext();
 
   useEffect(() => {
     setPage(pathname.split("/")[1]);
   }, [pathname]);
-
-  const logoStyles = {
-    width: "70px",
-  };
-
-  const containerStyles = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingRight: "20px",
-  };
-
-  const userStyles = {
-    marginLeft: "10px",
-    color: "white",
-  };
-
-  const listStyles = {
-    listStyle: "none",
-    padding: "0",
-    display: "flex",
-    alignItems: "center",
-  };
-
-  const listItemStyles = {
-    marginRight: "10px",
-    cursor: "pointer",
-  };
-
-  const selectedListItemStyles = {
-    ...listItemStyles,
-    backgroundColor: "#B71C1C",
-    color: "white",
-    fontWeight: "bold",
-    padding: "8px 12px",
-    borderRadius: "8px",
-  };
 
   const handleClickMenu = (page) => {
     // console.log(page);
@@ -70,83 +28,42 @@ const Navbar = () => {
 
   return (
     <>
-      {isAuthUser === true && routes[pathname] && (
+      {isAuthUser === true && (
         <>
-          <nav className="bg-red-500 py-4">
-            <div className="container mx-auto">
-              <div style={containerStyles}>
-                <div style={listStyles}>
-                  <p
-                    onClick={() => handleClickMenu("page")}
-                    className="flex items-center text-white font-bold text-xl"
-                  >
-                    <img
-                      src="https://www.pablospizza.com/wp-content/themes/pablopizza/images/logo-new.png"
-                      alt="Logo"
-                      className="mr-2"
-                      style={logoStyles}
-                    />
-                  </p>
-                  <ul className="flex space-x-4" style={listStyles}>
+          <nav className="bg-red-500 h-20 py-4 px-8 flex items-center justify-between shadow-2xl">
+            <p onClick={() => handleClickMenu("")} className="cursor-pointer">
+              <img
+                src="https://www.pablospizza.com/wp-content/themes/pablopizza/images/logo-new.png"
+                alt="Logo"
+                className="w-20"
+              />
+            </p>
+            <ul className="flex list-none p-0 items-center gap-4 tracking-wide">
+              {routes[usuario?.rol_id]?.map(
+                ({ route, title, visible }) =>
+                  visible && (
                     <li
-                      style={
-                        page === "" ? selectedListItemStyles : listItemStyles
-                      }
+                      className={`cursor-pointer px-4 py-2 rounded-full ${
+                        page === route && "bg-[#B71C1C] font-bold"
+                      } hover:bg-[#B71C1C]`}
                     >
                       <p
-                        onClick={() => handleClickMenu("")}
+                        onClick={() => handleClickMenu(route)}
                         className="text-white"
                       >
-                        Inicio
+                        {title}
                       </p>
                     </li>
-                    <li
-                      style={
-                        page === "sells"
-                          ? selectedListItemStyles
-                          : listItemStyles
-                      }
-                    >
-                      <p
-                        onClick={() => handleClickMenu("sells")}
-                        className="text-white"
-                      >
-                        Venta
-                      </p>
-                    </li>
-                    <li
-                      style={
-                        page === "inventory"
-                          ? selectedListItemStyles
-                          : listItemStyles
-                      }
-                    >
-                      <p
-                        onClick={() => handleClickMenu("inventory")}
-                        className="text-white"
-                      >
-                        Inventario
-                      </p>
-                    </li>
-                    <li
-                      style={
-                        page === "controlPanel"
-                          ? selectedListItemStyles
-                          : listItemStyles
-                      }
-                    >
-                      <p
-                        onClick={() => handleClickMenu("controlPanel")}
-                        className="text-white"
-                      >
-                        Panel de Control
-                      </p>
-                    </li>
-                  </ul>
-                </div>
-                <div style={userStyles}>{usuario.nombre}</div>
-              </div>
-            </div>
+                  )
+              )}
+            </ul>
+            <p
+              // onClick={() => setVisibleInfo(!visibleInfo)}
+              className="group text-white p-2 w-12 h-12 rounded-full cursor-pointer bg-[#B71C1C] flex items-center justify-center"
+            >
+              <FontAwesomeIcon icon={faUser} className="h-8 w-8" />
+              <CardInfoUser user={usuario} closeSession={cerrarSesion} />
+            </p>
           </nav>
         </>
       )}
