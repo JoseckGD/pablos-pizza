@@ -1,11 +1,5 @@
 "use client";
 
-//import useFetch from "@/hooks/useFetch";
-//import { useRouter } from "next/navigation";
-//import { useEffect, useState } from "react";
-//import icono from "../assets/icon.svg";
-//import Image from "next/image";
-//import { useUsuarioContext } from "../contexts/UsuarioContext";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import icono from "../assets/cocinero_user.png";
@@ -59,7 +53,6 @@ const titleStyles = {
   fontSize: "40px",
   fontWeight: "bold",
   color: "#333333",
-  marginBottom: "10px",
   marginBottom: "10px",
 };
 
@@ -133,7 +126,7 @@ const ControlPanel = () => {
           PANEL DE CONTROL
         </h1>
         <div className="card-container" style={cardContainerStyles}>
-          <Link href="/usuarios">
+          <Link href="/userManagement">
             <div
               className="card"
               style={{ ...cardStyles, width: "388px", height: "377px" }}
@@ -151,62 +144,59 @@ const ControlPanel = () => {
               </div>
             </div>
           </Link>
-          <Link
-            href="/reportsStatistics"
-            className="card"
-            style={{ ...cardStyles, width: "783px", height: "388px" }}
-            onMouseEnter={handleCardHover}
-            onMouseLeave={handleCardLeave}
-          >
-            {/* <Link href="/reportsStatistics"> */}
+          <Link href="/sells">
             <div
-              className="card-content"
-              style={{ width: "100%", height: "100%" }}
+              className="card"
+              style={{ ...cardStyles, width: "783px", height: "388px" }}
+              onMouseEnter={handleCardHover}
+              onMouseLeave={handleCardLeave}
             >
-              <h2>
-                <strong>Ventas</strong>
-              </h2>
-              <canvas
-                ref={chartRef}
-                style={{ width: "100%", height: "100%" }}
-              />
+              <div className="card-content" style={{ width: "100%", height: "100%" }}>
+                <h2>
+                  <strong>Ventas</strong>
+                </h2>
+                <canvas ref={chartRef} style={{ width: "100%", height: "100%" }} />
+              </div>
             </div>
-            {/* </Link> */}
           </Link>
         </div>
         <div className="card-container" style={cardContainerStyles}>
-          <div
-            className="card"
-            style={{ ...cardStyles, width: "704px", height: "388px" }}
-            onMouseEnter={handleCardHover}
-            onMouseLeave={handleCardLeave}
-          >
-            <div className="card-content">
-              <h2 style={titleStyles}>Inventario</h2>
-              <div style={imageStyles}>
-                <Image src={tomate} alt="Icono" width={150} height={150} />
-                <Image src={harina} alt="Icono" width={150} height={150} />
-                <Image src={queso} alt="Icono" width={140} height={150} />
+          <Link href="/inventory">
+            <div
+              className="card"
+              style={{ ...cardStyles, width: "704px", height: "388px" }}
+              onMouseEnter={handleCardHover}
+              onMouseLeave={handleCardLeave}
+            >
+              <div className="card-content">
+                <h2 style={titleStyles}>Inventario</h2>
+                <div style={imageStyles}>
+                  <Image src={tomate} alt="Icono" width={150} height={150} />
+                  <Image src={harina} alt="Icono" width={150} height={150} />
+                  <Image src={queso} alt="Icono" width={140} height={150} />
+                </div>
+                <p style={descriptionStyles}>
+                  Administra el inventario de productos.
+                </p>
               </div>
-              <p style={descriptionStyles}>
-                Administra el inventario de productos.
-              </p>
             </div>
-          </div>
-          <div
-            className="card"
-            style={{ ...cardStyles, width: "519px", height: "388px" }}
-            onMouseEnter={handleCardHover}
-            onMouseLeave={handleCardLeave}
-          >
-            <div className="card-content">
-              <h2 style={titleStyles}>Menú</h2>
-              <div style={imageStyles}>
-                <Image src={pizza} alt="Icono" width={210} height={210} />
+          </Link>
+          <Link href="/customMenu">
+            <div
+              className="card"
+              style={{ ...cardStyles, width: "519px", height: "388px" }}
+              onMouseEnter={handleCardHover}
+              onMouseLeave={handleCardLeave}
+            >
+              <div className="card-content">
+                <h2 style={titleStyles}>Menú</h2>
+                <div style={imageStyles}>
+                  <Image src={pizza} alt="Icono" width={210} height={210} />
+                </div>
+                <p style={descriptionStyles}>Personaliza el menú de opciones.</p>
               </div>
-              <p style={descriptionStyles}>Personaliza el menú de opciones.</p>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </Loader>
@@ -214,3 +204,4 @@ const ControlPanel = () => {
 };
 
 export default ControlPanel;
+
