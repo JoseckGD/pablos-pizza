@@ -92,15 +92,31 @@ const Sells = () => {
 
   const handleDelete = (sell) => {
     setSelectedSell(sell);
+    console.log(sell);
+
     setIsConfirmationPopupOpen(true);
   };
 
   const handleConfirmDelete = () => {
-    // Lógica para eliminar la venta
-    console.log("Venta eliminada:", selectedSell);
-    // Aquí puedes realizar una llamada a la API para eliminar la venta
+    const fetchDataAsync = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/sells/deleteSell/${selectedSell.id}`,
+          {
+            method: "DELETE",
+          }
+        );
+        const responseData = await response.json();
+        console.log(responseData);
+        fetchData(); // Actualizar datos después de eliminar
+      } catch (error) {
+        console.error("Error fetching sells data:", error);
+      }
+    };
+    fetchDataAsync();
     setIsConfirmationPopupOpen(false);
   };
+  
 
   const handleCancelDelete = () => {
     setIsConfirmationPopupOpen(false);
@@ -116,11 +132,52 @@ const Sells = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica para guardar los cambios realizados en la venta
-    console.log("Venta modificada:", selectedSell);
-    // Aquí puedes realizar una llamada a la API para guardar los cambios
-    setIsPopupOpen(false);
+  
+    if (!selectedSell.id) {
+      console.log("VAS A AÑADIR UNA VENTA");
+  
+      const fetchDataAsync = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/sells/addSell`,
+            {
+              method: "POST",
+              body: JSON.stringify(selectedSell),
+            }
+          );
+          const responseData = await response.json();
+          console.log(responseData);
+          fetchData(); // Actualizar datos después de agregar
+        } catch (error) {
+          console.error("Error fetching sells data:", error);
+        }
+      };
+      fetchDataAsync();
+      setIsPopupOpen(false);
+    } else {
+      console.log("VAS A MODIFICAR UNA VENTA");
+  
+      const fetchDataAsync = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/sells/modifySell`,
+            {
+              method: "PUT",
+              body: JSON.stringify(selectedSell),
+            }
+          );
+          const responseData = await response.json();
+          console.log(responseData);
+          fetchData(); // Actualizar datos después de modificar
+        } catch (error) {
+          console.error("Error fetching sells data:", error);
+        }
+      };
+      fetchDataAsync();
+      setIsPopupOpen(false);
+    }
   };
+  
 
   const handleCancel = () => {
     setIsPopupOpen(false);
