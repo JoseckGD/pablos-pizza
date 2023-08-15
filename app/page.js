@@ -6,7 +6,9 @@ import ControlPanel from "./controlPanel/page";
 export default function Home() {
   const { usuario } = useUsuarioContext();
   if (usuario) {
-    return (<ControlPanel />)
+    if (usuario.rol_id === 1) {
+      return (<ControlPanel />)
+    }
   }
   return (
     <LayoutBase>
