@@ -1,3 +1,3 @@
 export const dataTableHeaderUser = [
-    "Nombre", "Apellidos", "Telefono", "Correo", "Acciones"
+    "Nombre", "Apellidos", "Telefono", "Correo","Tipo", "Acciones"
 ]

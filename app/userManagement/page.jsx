@@ -79,8 +79,9 @@ const UserManagement = () => {
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            {dataTableHeaderUser.map((header) => (
+            {dataTableHeaderUser.map((header, i) => (
               <th
+              key={i}
                 style={{
                   backgroundColor: "#B71C1C",
                   color: "white",
@@ -108,6 +109,7 @@ const UserManagement = () => {
                 <TD>{user.apellidos}</TD>
                 <TD>{user.telefono}</TD>
                 <TD>{user.correo}</TD>
+                <TD>{user.ROL}</TD>
                 <td className="flex justify-center gap-4">
                   <Button
                     eventOnClick={() => handleModifyUser(user)}
