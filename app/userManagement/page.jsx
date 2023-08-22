@@ -81,7 +81,7 @@ const UserManagement = () => {
           <tr>
             {dataTableHeaderUser.map((header, i) => (
               <th
-              key={i}
+                key={i}
                 style={{
                   backgroundColor: "#B71C1C",
                   color: "white",
