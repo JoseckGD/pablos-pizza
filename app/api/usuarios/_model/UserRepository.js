@@ -14,7 +14,10 @@ export default class UserRepository {
 
     async getUsers() {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT *, roles.nombre as ROL FROM usuarios INNER JOIN personas ON personas.id = usuarios.persona_id INNER JOIN roles ON roles.id = usuarios.rol_id';
+            const query = `SELECT *, roles.nombre as ROL, personas.nombre as nombre 
+            FROM usuarios 
+            INNER JOIN personas ON personas.id = usuarios.persona_id 
+            INNER JOIN roles ON roles.id = usuarios.rol_id`;
             dbPizzeriaConnection.query(query, (error, results) => {
                 if (error) {
                     reject(error);
