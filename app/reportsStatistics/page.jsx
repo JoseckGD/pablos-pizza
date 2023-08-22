@@ -7,38 +7,52 @@ import { LayoutBase } from "../components/LayoutBase";
 import { TitlePage } from "../components/TitlePage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SalesReport from "../components/SalesReport";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import jsPDF from "jspdf";
 
 const ReportsStatistics = () => {
   const chartRef = useRef(null);
 
   const [dataSells, setDataSells] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const { data, isLoading, error, fetchData } = useFetch(
     "http://localhost:3000/api/sells/getSellsGlobal",
-    { method: "GET" } // Opciones de la petición (puedes utilizar cualquier opción válida para fetch)
+    { method: "GET" }
   );
 
   useEffect(() => {
+    handleReset();
     let _data;
     if (data) {
-      setDataSells(data.sells);
+      const sortedSells = data.sells.sort((sellA, sellB) => {
+        const dateA = new Date(sellA.fecha);
+        const dateB = new Date(sellB.fecha);
+        return dateA - dateB;
+      });
+      setDataSells(sortedSells);
+      const groupedData = sortedSells.reduce((acc, sell) => {
+        const sellDate = new Date(sell.fecha).toLocaleDateString("es-ES", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        if (!acc[sellDate]) {
+          acc[sellDate] = 0;
+        }
+        acc[sellDate] += sell.total;
+        return acc;
+      }, {});
+
+      const labels = Object.keys(groupedData);
+      const totals = Object.values(groupedData);
+
       _data = {
-        labels: data.sells.map((sell) => {
-          const sellDate = new Date(sell.fecha);
-          return sellDate.toLocaleDateString("es-ES", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          });
-        }),
+        labels: labels,
         datasets: [
           {
             label: "Ventas",
-            data: data.sells.map((sell) => {
-              return sell.total;
-            }),
+            data: totals,
             backgroundColor: "rgba(54, 162, 235, 0.6)",
           },
         ],
@@ -54,6 +68,13 @@ const ReportsStatistics = () => {
         type: "bar",
         data: _data,
         options: {
+          plugins: {
+            title: {
+              fontSize: 20,
+              display: true,
+              text: "Ventas",
+            },
+          },
           scales: {
             y: {
               beginAtZero: true,
@@ -65,14 +86,53 @@ const ReportsStatistics = () => {
   }, [data]);
 
   useEffect(() => {
+    handleReset();
     fetchData();
   }, []);
 
   const generateReport = (startDate, endDate) => {
-    const filteredSells = dataSells.filter((sell) => {
-      const sellDate = new Date(sell.fecha);
-      return sellDate >= new Date(startDate) && sellDate <= new Date(endDate);
-    });
+    let filteredSells = dataSells;
+
+    // Verifica si se proporciona startDate o endDate
+    if (startDate || endDate) {
+      // Si al menos uno de ellos se proporciona, filtra el arreglo dataSells
+      filteredSells = dataSells.filter((venta) => {
+        // Convierte la propiedad fecha de la venta en un objeto Date
+        const fechaVenta = new Date(venta.fecha.slice(0, 10));
+
+        // Verifica si solo se proporciona startDate (sin endDate)
+        if (startDate && !endDate) {
+          // Convierte las fechas a cadenas en formato ISO
+          const startDateISO = new Date(startDate).toISOString().slice(0, 10);
+          const fechaVentaISO = fechaVenta.toISOString().slice(0, 10);
+
+          // Compara si las fechas en formato ISO son iguales
+          return startDateISO === fechaVentaISO;
+        }
+
+        // Verifica si solo se proporciona endDate (sin startDate)
+        if (endDate && !startDate) {
+          // Convierte las fechas a cadenas en formato ISO
+          const endDateISO = new Date(endDate).toISOString().slice(0, 10);
+          const fechaVentaISO = fechaVenta.toISOString().slice(0, 10);
+
+          // Compara si las fechas en formato ISO son iguales
+          return endDateISO === fechaVentaISO;
+        }
+
+        // Si se proporcionan ambos startDate y endDate, filtra por rango de fechas
+        return (
+          fechaVenta >= new Date(startDate) && fechaVenta <= new Date(endDate)
+        );
+      });
+    }
+
+    if (filteredSells.length === 0) {
+      setErrorMessage("No hay ventas en esa fecha o rango de fechas.");
+      return;
+    }
+
+    setErrorMessage(null);
 
     const formattedLabels = filteredSells.map((sell) => {
       const sellDate = new Date(sell.fecha);
@@ -94,8 +154,6 @@ const ReportsStatistics = () => {
       ],
     };
 
-    setDataSells(filteredSells);
-
     if (chartRef.current.chart) {
       chartRef.current.chart.data = _data;
       chartRef.current.chart.update();
@@ -106,21 +164,28 @@ const ReportsStatistics = () => {
     let _data;
     if (data) {
       setDataSells(data.sells);
+      const groupedData = data.sells.reduce((acc, sell) => {
+        const sellDate = new Date(sell.fecha).toLocaleDateString("es-ES", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        if (!acc[sellDate]) {
+          acc[sellDate] = 0;
+        }
+        acc[sellDate] += sell.total;
+        return acc;
+      }, {});
+
+      const labels = Object.keys(groupedData);
+      const totals = Object.values(groupedData);
+
       _data = {
-        labels: data.sells.map((sell) => {
-          const sellDate = new Date(sell.fecha);
-          return sellDate.toLocaleDateString("es-ES", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          });
-        }),
+        labels: labels,
         datasets: [
           {
             label: "Ventas",
-            data: data.sells.map((sell) => {
-              return sell.total;
-            }),
+            data: totals,
             backgroundColor: "rgba(54, 162, 235, 0.6)",
           },
         ],
@@ -131,6 +196,7 @@ const ReportsStatistics = () => {
         chartRef.current.chart.update();
       }
     }
+    setErrorMessage(null);
   };
 
   const generatePDF = (startDate, endDate) => {
@@ -163,8 +229,19 @@ const ReportsStatistics = () => {
         generateReport={generateReport}
         handleReset={handleReset}
         generatePDF={generatePDF}
+        setErrorMessage={setErrorMessage}
       />
-      <div className="flex flex-row items-center justify-around p-4 ">
+
+      {errorMessage && (
+        <div
+          className="text-white bg-red-500 w-fit text-base p-4 rounded m-auto 
+        flex flex-row justify-center items-center gap-2 my-2"
+        >
+          <FontAwesomeIcon icon={faCircleInfo} /> <p>{errorMessage}</p>
+        </div>
+      )}
+
+      <div className="flex flex-row items-center justify-around mt-2">
         {isLoading ? (
           <FontAwesomeIcon
             icon={faSpinner}
