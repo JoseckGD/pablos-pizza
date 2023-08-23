@@ -16,10 +16,11 @@ const UserManagement = () => {
   const [openModalAdd, setOpenModalAdd] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [dataUser, setDataUser] = useState(null);
+  const [showAdmins, setShowAdmins] = useState(false);
 
   const { data, isLoading, error, fetchData } = useFetch(
     "http://localhost:3000/api/usuarios",
-    { method: "GET" } // Opciones de la petición (puedes utilizar cualquier opción válida para fetch)
+    { method: "GET" }
   );
 
   useEffect(() => {
@@ -49,6 +50,11 @@ const UserManagement = () => {
     }, 1000);
   };
 
+  // Filtrar usuarios según el estado de showAdmins.
+  const filteredAdmins = users && users.filter((user) => user.ROL === "Administrador");
+  const filteredEmployees = users && users.filter((user) => user.ROL === "Empleado");
+  const filteredUsers = showAdmins ? (filteredAdmins || []).concat(filteredEmployees || []) : users || [];
+
   const handleModifyUser = (user) => {
     toggleModalAdd();
     setDataUser(user);
@@ -75,6 +81,10 @@ const UserManagement = () => {
 
       <article className="flex justify-between items-center">
         <Button title="Agregar empleado" eventOnClick={toggleModalAdd} />
+        <Button
+          title={`Mostrar ${showAdmins ? "Todos" : "Administradores"}`}
+          eventOnClick={() => setShowAdmins(!showAdmins)}
+        />
       </article>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
@@ -103,7 +113,7 @@ const UserManagement = () => {
               />
             </tr>
           ) : (
-            users?.map((user, index) => (
+            filteredUsers.map((user, index) => (
               <tr key={index}>
                 <TD>{user.nombre}</TD>
                 <TD>{user.apellidos}</TD>
