@@ -12,6 +12,13 @@ const Sells = () => {
   const [sells, setSells] = useState([]);
   const [data, setData] = useState(null);
   const [searchDate, setSearchDate] = useState("");
+  const [users, setUsers] = useState([]);
+  const [selectedProductPrice, setSelectedProductPrice] = useState(0);
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [selectedSellQuantity, setSelectedSellQuantity] = useState(1);
+
+
+
 
   const cancelButtonStyles = {
     backgroundColor: "#B71C1C",
@@ -69,7 +76,7 @@ const Sells = () => {
     fetchDataAsync();
     setIsConfirmationPopupOpen(false);
   };
-  
+
 
   const handleCancelDelete = () => {
     setIsConfirmationPopupOpen(false);
@@ -85,17 +92,25 @@ const Sells = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     if (!selectedSell.id) {
       console.log("VAS A AÑADIR UNA VENTA");
-  
+
+      const sellData = {
+        usuario_id: selectedSell.usuario_id,
+        fecha: selectedSell.fecha,
+        total: selectedProductPrice * selectedSellQuantity, // Actualizar el cálculo aquí
+      };
+
+      console.log(sellData)
+
       const fetchDataAsync = async () => {
         try {
           const response = await fetch(
             `http://localhost:3000/api/sells/addSell`,
             {
               method: "POST",
-              body: JSON.stringify(selectedSell),
+              body: JSON.stringify(sellData),
             }
           );
           const responseData = await response.json();
@@ -109,14 +124,19 @@ const Sells = () => {
       setIsPopupOpen(false);
     } else {
       console.log("VAS A MODIFICAR UNA VENTA");
-  
+
+      console.log(selectedSell);
+
+      const sellDataModify = { ...selectedSell }; // Populate sellDataModify
+      sellDataModify.total = selectedProductPrice * selectedSellQuantity; // Update total
+
       const fetchDataAsync = async () => {
         try {
           const response = await fetch(
             `http://localhost:3000/api/sells/modifySell`,
             {
               method: "PUT",
-              body: JSON.stringify(selectedSell),
+              body: JSON.stringify(sellDataModify),
             }
           );
           const responseData = await response.json();
@@ -130,7 +150,7 @@ const Sells = () => {
       setIsPopupOpen(false);
     }
   };
-  
+
 
   const handleCancel = () => {
     setIsPopupOpen(false);
@@ -168,7 +188,39 @@ const Sells = () => {
   useEffect(() => {
     // Obtener los datos de las ventas
     fetchData();
+    fetchUsers();
+    fetchInventory();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/usuarios");
+      const responseData = await response.json();
+      if (responseData.status) {
+        // Ensure unique id values for each user
+        const uniqueUsers = responseData.users.map((user, index) => ({
+          ...user,
+          id: index + 1, // Using index as a temporary unique id
+        }));
+        setUsers(uniqueUsers);
+      }
+    } catch (error) {
+      console.error("Error fetching users data:", error);
+    }
+  };
+
+
+  const fetchInventory = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/inventory");
+      const responseData = await response.json();
+      if (responseData.status) {
+        setInventoryItems(responseData.data);
+      }
+    } catch (error) {
+      console.error("Error fetching inventory data:", error);
+    }
+  };
 
   useEffect(() => {
     console.log(data);
@@ -176,6 +228,27 @@ const Sells = () => {
       setSells(data.data);
     }
   }, [data]);
+
+  const handleProductChange = (e) => {
+    const selectedProductId = e.target.value;
+    setSelectedSell((prevSell) => ({
+      ...prevSell,
+      producto_id: selectedProductId,
+    }));
+    const selectedProduct = inventoryItems.find(
+      (item) => item.id === parseInt(selectedProductId)
+    );
+    if (selectedProduct) {
+      setSelectedProductPrice(selectedProduct.precio);
+    } else {
+      setSelectedProductPrice(0);
+    }
+  };
+
+  const handleQuantityChange = (e) => {
+    setSelectedSellQuantity(e.target.value);
+  };
+
 
   const fetchData = () => {
     // Uso de la API de consultar ventas
@@ -264,14 +337,22 @@ const Sells = () => {
           <form onSubmit={handleSubmit}>
             <label>
               Vendedor:
-              <input
-                type="text"
+              <select
                 name="usuario_id"
                 value={selectedSell?.usuario_id || ""}
                 onChange={handleChange}
                 style={inputStyles}
-              />
+              >
+                <option value="">Selecciona un vendedor</option>
+                {users.map((user) => (
+                  <option key={user.persona_id} value={user.persona_id}>
+                    {user.nombre} {user.apellidos}
+                  </option>
+                ))}
+              </select>
             </label>
+
+
             <label>
               Fecha:
               <input
@@ -282,16 +363,47 @@ const Sells = () => {
                 style={inputStyles}
               />
             </label>
+
             <label>
-              Total:
+              Producto:
+              <select
+                name="producto_id"
+                value={selectedSell?.producto_id || ""}
+                onChange={(e) => handleProductChange(e)}
+                style={inputStyles}
+              >
+                <option value="">Selecciona un producto</option>
+                {inventoryItems.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.nombre}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Cantidad:
               <input
-                type="text"
-                name="total"
-                value={selectedSell?.total || ""}
-                onChange={handleChange}
+                type="number"
+                name="cantidad"
+                value={selectedSellQuantity || ""}
+                onChange={handleQuantityChange}
                 style={inputStyles}
               />
             </label>
+
+
+
+            <input
+              type="text"
+              name="totalVenta"
+              value={(selectedProductPrice * selectedSellQuantity) || ""}
+              readOnly
+              style={inputStyles}
+            />
+
+
+
             <div className="button-container">
               <button type="submit" style={buttonStyles}>
                 Guardar
